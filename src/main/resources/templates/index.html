@@ -1,0 +1,29 @@
+
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Index</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<table border="1">
+	<tr>
+		<td>Test Name</td>
+		<td th:each="environment : ${environmentList}"
+		th:text="${environment}">Tests</td>
+	</tr>
+	<th:block th:each="info : ${info}">
+	<tr>
+       <td th:text="${info.name}">A Test'</td>
+       <th:block th:each="pf : ${info.passFailOrNA}">
+            <td>
+       			<a th:text="${pf.passFailOrNA}" th:href="@{/results(id=${pf.runID})}"></a>
+       		</td>
+       </th:block>
+    </tr>
+    </th:block>
+	
+	</table>
+	
+</body>
+</html>
