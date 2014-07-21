@@ -25,10 +25,10 @@ public class RunImmediately {
 	@PostConstruct
 	public void go() throws IOException, SchedulerException, InvalidRemoteException, TransportException, GitAPIException
 	{
-//		git.cloneOrPull();
-//		trigger.triggerCron();
+		git.cloneOrPull();
+		trigger.triggerCron();
 		
-		zipper.compressZipFile("/Users/dansbacher14/Documents/workspace/obi_jmx_test_webapp/src/obi_ci_scripts/test-results", "/Users/dansbacher14/Documents/workspace/obi_jmx_test_webapp/zips");
+		//zipper.compressZipFile("/Users/dansbacher14/Documents/workspace/obi_jmx_test_webapp/src/obi_ci_scripts/test-results/");
 		
 	}
 
