@@ -17,7 +17,6 @@ import com.web_application.RunImmediately;
 public class Application {
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println("hello");
 		
 		Object[] sources = { Application.class, NightlySchedule.class, RunImmediately.class };
 		SpringApplication.run(sources, args);

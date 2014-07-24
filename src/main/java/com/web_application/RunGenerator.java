@@ -67,6 +67,13 @@ public class RunGenerator implements Runnable{
 				break;
 			}
 			
+			try {
+				run.setResultFiles(ZipManipulator.compressZipFile(localPath + "/test-results/"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			rDao.create(run);
 		}
 	}

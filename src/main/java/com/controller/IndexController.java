@@ -1,12 +1,19 @@
 package com.controller;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Locale;
+import java.util.zip.ZipInputStream;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
@@ -14,7 +21,9 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import com.web_application.AllEnvironmentsFromFile;
 import com.web_application.GatherInfoForIndexTable;
 import com.web_application.RunDao;
+import com.web_application.RunEntity;
 import com.web_application.TestAndPath;
+import com.web_application.ZipManipulator;
 
 @RestController
 public class IndexController {
@@ -57,4 +66,37 @@ public class IndexController {
 		return resolver.resolveViewName("index", Locale.US);
 	}
 
+	@RequestMapping(value="/results", method=RequestMethod.GET)
+	public View showResults(@RequestParam("id")int ID, Model model) throws Exception{
+	
+	model.addAttribute("ID", ID);
+	
+	if(ID != 0)
+	{
+		RunEntity run = new RunEntity();
+		
+		run = rDao.findById(ID);
+		
+	    model.addAttribute("run", run);
+	}
+
+	return resolver.resolveViewName("results", Locale.US);
+	}
+	
+	@RequestMapping(value="/resultDisplay", method=RequestMethod.GET)
+	public void showResultDisplay(@RequestParam("id")int ID, Model model, HttpServletResponse res) throws Exception{
+		
+		RunEntity run = new RunEntity();
+		
+		run = rDao.findById(ID);
+		res.setContentType("text/html");
+
+		if(ID != 0 && run != null)
+		{
+			byte[] b = 	ZipManipulator.writeByteToFile(run.getResultFiles());
+			
+			IOUtils.write(b, res.getOutputStream());
+		}
+		
+	}
 }
