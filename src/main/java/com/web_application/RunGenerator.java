@@ -9,8 +9,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 
-
-public class RunGenerator implements Runnable{
+public class RunGenerator implements Runnable {
 
 	static String environment;
 	RunDao rDao = ApplicationContextHolder.getContext().getBean(RunDao.class);
@@ -20,9 +19,8 @@ public class RunGenerator implements Runnable{
 	static String localPath = ImportantInformation.getLocalPath();
 	static String pathToODirectory;
 	String source;
-	
-	public RunGenerator(String enviro, String sources) throws IOException
-	{
+
+	public RunGenerator(String enviro, String sources) throws IOException {
 		environment = enviro;
 		testNumber = getLatestTestNumber() + 1;
 		
@@ -30,8 +28,19 @@ public class RunGenerator implements Runnable{
 		testList = all.testsAndPaths();
 		pathToODirectory = "test-results";
 		source = sources;
-		
+
 	}
+	
+	public RunGenerator(int testNum, String enviro, String sources, List<TestAndPath> testLists) throws IOException {
+		environment = enviro;
+		testNumber = testNum;
+		System.out.println("The environment string is now " + enviro);
+		testList = testLists;
+		pathToODirectory = "test-results";
+		source = sources;
+
+	}
+
 	@Override
 	public void run() {
 		try {
@@ -46,16 +55,15 @@ public class RunGenerator implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		for(TestAndPath test : testList)
-		{
-			System.out.println("Running " + test.getName() + " in " + environment + " environment!");
+
+		for (TestAndPath test : testList) {
+			System.out.println("Running " + test.getName() + " in "
+					+ environment + " environment!");
 			RunEntity run = new RunEntity();
 			run.setTestName(test.getName());
 			run.setEnvironment(environment);
 			run.setTestNumber(testNumber);
-			java.util.Date date= new java.util.Date();
+			java.util.Date date = new java.util.Date();
 			run.setDate(new Timestamp(date.getTime()));
 			run.setSource(source);
 			try {
@@ -66,75 +74,62 @@ public class RunGenerator implements Runnable{
 				run.setPassOrFail("Failed");
 				break;
 			}
-			
+
 			try {
-				run.setResultFiles(ZipManipulator.compressZipFile(localPath + "/test-results/"));
+				run.setResultFiles(ZipManipulator.compressZipFile(localPath
+						+ "/test-results/"));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			rDao.create(run);
 		}
 	}
-	
 
-	public int getLatestTestNumber()
-	{
+	public int getLatestTestNumber() {
 		int testNum = rDao.findLatestTestNumber(environment, source);
 		return testNum;
 	}
-	
-	
-	public static String testPassed(String directory, String fileName) throws InterruptedException
-	{
+
+	public static String testPassed(String directory, String fileName)
+			throws InterruptedException {
 		int passOrFail = 2;
 		File file = new File(localPath);
-		
-		String returnSH = "./report.sh -e " + environment + " -t " + directory + "/" + fileName + " -o " + pathToODirectory;
-		
+
+		String returnSH = "./report.sh -e " + environment + " -t " + directory
+				+ "/" + fileName + " -o " + pathToODirectory;
+
 		try {
 			Process process = Runtime.getRuntime().exec(returnSH, null, file);
 			process.waitFor();
-			//System.out.println("Input Stream: " + process.getInputStream());
-			//System.out.println("Output Stream: " + process.getOutputStream());
-			//System.out.println("Errors: " + process.getErrorStream());
+			// System.out.println("Input Stream: " + process.getInputStream());
+			// System.out.println("Output Stream: " +
+			// process.getOutputStream());
+			// System.out.println("Errors: " + process.getErrorStream());
 
 			passOrFail = process.exitValue();
-			
+
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch bloc
 			e.printStackTrace();
 		}
-		
-		if(passOrFail == 0)
-		{
+
+		if (passOrFail == 0) {
 			return "Passed";
-		}
-		else
-		{
+		} else {
 			return "Failed";
 		}
 	}
 
-	
-	
-	
-	
-	
-//____________________________________________________________________________________________________________________________________
-	public RunGenerator()
-	{
-		
+	// ____________________________________________________________________________________________________________________________________
+	public RunGenerator() {
+
 	}
 }
 
+// Generate all values for run and return run
 
-
-
-
-//Generate all values for run and return run
-
-//ID INTEGER IDENTITY, 
-//Source VARCHAR(50), 
-//RESULTFILES BLOB);
+// ID INTEGER IDENTITY,
+// Source VARCHAR(50),
+// RESULTFILES BLOB);

@@ -4,7 +4,8 @@ public class TestAndPath {
 	private String testName;
 	private String testPath;
 	private IDAndPassOrFail[] passFailOrNA;
-	
+	private String environment;
+
 	public String getName() {
 		return testName;
 	}
@@ -29,8 +30,12 @@ public class TestAndPath {
 		passFailOrNA = passOr;
 	}
 	
+	public String getEnvironment() {
+		return environment;
+	}
 
+	public void setEnvironment(String enviro) {
+		environment = enviro;
+	}
 
-	
-	
 }

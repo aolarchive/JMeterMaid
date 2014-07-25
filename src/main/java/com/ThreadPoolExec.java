@@ -22,6 +22,7 @@ public class ThreadPoolExec {
 	static int corePoolSize = 1;
 	static int maxPoolSize = 1;
 	static long keepAliveTime = 5000;
+	static ThreadPoolExec thread;
 
 	static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
 			corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.MILLISECONDS,
@@ -43,6 +44,11 @@ public class ThreadPoolExec {
 	{
 		scheduler = new StdSchedulerFactory().getScheduler();
 		return scheduler;
+	}
+	
+	public static ThreadPoolExec getThreadPoolExec()
+	{
+		return thread;
 	}
 	
 	

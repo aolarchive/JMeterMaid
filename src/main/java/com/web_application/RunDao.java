@@ -37,6 +37,11 @@ public class RunDao {
 	public List<RunEntity> findAllByEnvironment(String enviro, String source) {
 		return runRepository.findByEnvironmentAndSource(enviro, source);
 	}
+	
+	@Transactional
+	public List<RunEntity> findByTestNumberAndSource(int testNum, String source) {
+		return runRepository.findByTestNumberAndSource(testNum, source);
+	}
 
 	public List<RunEntity> findByNameNumberEnviroSource(String testName,
 			int testNum, String enviro, String source) {
@@ -47,6 +52,20 @@ public class RunDao {
 	public int findLatestTestNumber(String enviro, String source) {
 		int testNum = 0;
 		List<RunEntity> runList = findAllByEnvironment(enviro, source);
+		if (runList != null) {
+			for (RunEntity run : runList) {
+				if (run.getTestNumber() > testNum) {
+					testNum = run.getTestNumber();
+				}
+			}
+		}
+
+		return testNum;
+	}
+	
+	public int findLatestSourceTestNumber(String source) {
+		int testNum = 0;
+		List<RunEntity> runList = runRepository.findBySource(source);
 		if (runList != null) {
 			for (RunEntity run : runList) {
 				if (run.getTestNumber() > testNum) {

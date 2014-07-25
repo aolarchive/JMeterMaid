@@ -20,7 +20,7 @@ public class ScheduledJob extends QuartzJobBean {
 	protected void executeInternal(JobExecutionContext context)
 			throws JobExecutionException {
 
-		ThreadPoolExecutor threadPoolExecutor = ThreadPoolExec.getExecutor();
+		ThreadPoolExecutor threadPoolExecutor = ThreadPoolExec.getThreadPoolExec().getExecutor();
 		System.out.println(threadPoolExecutor.getPoolSize());
 		JobKey key = context.getJobDetail().getKey();
 		String enviro = key.getGroup();

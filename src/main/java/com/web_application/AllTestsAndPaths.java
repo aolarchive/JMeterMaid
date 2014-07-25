@@ -13,10 +13,22 @@ public class AllTestsAndPaths {
 
 		List<String> allPaths = new ArrayList<String>();
 		recursiveAllDirectories(localPath, allPaths, localPath.length());
-		
+
 		testsAndPaths = getTestersWithDirectoryPath(allPaths, localPath);
 
-		
+		return testsAndPaths;
+	}
+
+	public List<TestAndPath> specificTestsAndPaths(List<TestAndPath> testsToReturn)
+			throws IOException {
+		List<TestAndPath> testsAndPaths = new ArrayList<TestAndPath>();
+		String localPath = ImportantInformation.getLocalPath();
+
+		List<String> allPaths = new ArrayList<String>();
+		recursiveAllDirectories(localPath, allPaths, localPath.length());
+
+		testsAndPaths = getSpecificTestersWithDirectoryPath(allPaths, localPath, testsToReturn);
+
 		return testsAndPaths;
 	}
 
@@ -31,8 +43,7 @@ public class AllTestsAndPaths {
 			String newPath = path + "/" + fileTemp;
 			File newFile = new File(newPath);
 			if (newFile.isDirectory()) {
-				if(arrayContainsJMX(newFile.list()))
-				{
+				if (arrayContainsJMX(newFile.list())) {
 					paths.add(newPath.substring(pathLength + 1));
 				}
 				recursiveAllDirectories(newPath, paths, pathLength);
@@ -53,11 +64,9 @@ public class AllTestsAndPaths {
 
 		return containsJMX;
 	}
-	
-	
+
 	public List<TestAndPath> getTestersWithDirectoryPath(
-			List<String> pathsWithJMX, String localPath)
-			throws IOException {
+			List<String> pathsWithJMX, String localPath) throws IOException {
 		List<TestAndPath> testerArrayList = new ArrayList<TestAndPath>();
 
 		for (int i = 0; i < pathsWithJMX.size(); i++) {
@@ -70,6 +79,33 @@ public class AllTestsAndPaths {
 					tempTester.setName(fileList[j]);
 					tempTester.setPath(pathsWithJMX.get(i));
 					testerArrayList.add(tempTester);
+				}
+			}
+
+		}
+
+		return testerArrayList;
+
+	}
+
+	public List<TestAndPath> getSpecificTestersWithDirectoryPath(
+			List<String> pathsWithJMX, String localPath,
+			List<TestAndPath> specificTests) throws IOException {
+		List<TestAndPath> testerArrayList = new ArrayList<TestAndPath>();
+
+		for (int i = 0; i < pathsWithJMX.size(); i++) {
+			File file = new File(localPath + "/" + pathsWithJMX.get(i));
+
+			String[] fileList = file.list();
+			for (int j = 0; j < fileList.length; j++) {
+				for (TestAndPath test : specificTests) {
+					if ((fileList[j].equals(test.getName()))) {
+						TestAndPath tempTester = new TestAndPath();
+						tempTester.setName(fileList[j]);
+						tempTester.setPath(pathsWithJMX.get(i));
+						tempTester.setEnvironment(test.getEnvironment());
+						testerArrayList.add(tempTester);
+					}
 				}
 			}
 

@@ -14,6 +14,15 @@ public interface RunRepository extends JpaRepository<RunEntity, Integer> {
 	public List<RunEntity> findByEnvironmentAndSource(
 			@Param("environment") String environment,
 			@Param("source") String source);
+	
+	@Query("SELECT r FROM RunEntity r WHERE r.testNumber = :testnumber AND r.source = :source")
+	public List<RunEntity> findByTestNumberAndSource(
+			@Param("testnumber") int testnumber,
+			@Param("source") String source);
+	
+	@Query("SELECT r FROM RunEntity r WHERE r.source = :source")
+	public List<RunEntity> findBySource(
+			@Param("source") String source);
 
 	@Query("SELECT r FROM RunEntity r WHERE r.testName = :testname AND r.testNumber = :testnumber AND r.environment = :environment AND r.source = :source")
 	public List<RunEntity> findByNameNumberEnvironmentSource(
