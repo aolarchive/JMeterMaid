@@ -26,8 +26,6 @@ public class AllEnvironmentsFromFile {
 	@Autowired
 	CronTrigger trigger;
 
-	String environmentsFile = ImportantInformation.getPathToEnvironmentsInfo();
-
 	@Transactional
 	public EnvironmentEntity create(EnvironmentEntity environment) {
 
