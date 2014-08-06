@@ -11,88 +11,80 @@ import java.util.List;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.repository.EnvironmentRepository;
 
 @Component
+@Service
 public class AllEnvironmentsFromFile {
+
+	@Autowired
+	EnvironmentRepository enviroRepo;
 
 	@Autowired
 	CronTrigger trigger;
 
 	String environmentsFile = ImportantInformation.getPathToEnvironmentsInfo();
 
+	@Transactional
+	public EnvironmentEntity create(EnvironmentEntity environment) {
+
+		EnvironmentEntity createdEnviro = environment;
+
+		return enviroRepo.save(createdEnviro);
+	}
+
 	public List<Environment> getEnvironments() throws IOException {
 		List<Environment> environments = new ArrayList<Environment>();
-
-		BufferedReader br = new BufferedReader(new FileReader(environmentsFile));
-		try {
-			StringBuilder sb = new StringBuilder();
-			String line = br.readLine();
-
-			while (line != null) {
-				System.out.println(line);
-				String[] nameAndTime = line.split(",");
-				Environment tempEnviro = new Environment();
-				tempEnviro.setName(nameAndTime[0]);
-				tempEnviro.setCron(nameAndTime[1]);
-				environments.add(tempEnviro);
-				line = br.readLine();
-			}
-			return environments;
-		} finally {
-			br.close();
+		List<EnvironmentEntity> entity = getAllEntities();
+		for (EnvironmentEntity e : entity) {
+			Environment z = new Environment();
+			z.setName(e.getName());
+			z.setCron(e.getCron());
+			environments.add(z);
 		}
-
+		return environments;
 	}
 
-	public void addEnvironment(String name, String cron) throws IOException,
-			SchedulerException {
-		Boolean environmentAlreadyExists = false;
-		List<Environment> tempList = new ArrayList<Environment>();
-		tempList = getEnvironments();
-		File file = new File(environmentsFile);
-		FileWriter writer = new FileWriter(file);
-		for (Environment enviro : tempList) {
-			if (enviro.getName().equals(name)) {
-				environmentAlreadyExists = true;
+	@Transactional
+	public List<EnvironmentEntity> getAllEntities() {
+		System.out.println("Call Check");
+		List<EnvironmentEntity> entity = enviroRepo.findAll();
+		for (EnvironmentEntity e : entity) {
+			if ((!org.quartz.CronExpression.isValidExpression(e.getCron()) || e.getCron().endsWith("31 2 ?")) && e.getCron() != "") {
+				System.out.println("Setting cron to empty string");
+				e.setCron("");
+				create(e);
 			}
-			writer.write(enviro.getName());
-			writer.write(",");
-			writer.write(enviro.getCron());
-			writer.append("\n");
 		}
+		return entity;
+	}
 
-		if (!environmentAlreadyExists) {
-			writer.write(name);
-			writer.write(",");
-			writer.write(cron);
+	@Transactional
+	public void addAll(List<EnvironmentEntity> env) throws SchedulerException,
+			IOException {
+		enviroRepo.deleteAll();
+		for (EnvironmentEntity e : env) {
+			System.out.println("going into database " + e.getName());
+			enviroRepo.save(e);
 		}
-
-		writer.flush();
-		writer.close();
 
 		trigger.triggerCron();
 
 	}
 
-	public void removeEnvironment(String environment) throws IOException,
-			SchedulerException {
-		List<Environment> tempList = new ArrayList<Environment>();
-		tempList = getEnvironments();
-		File file = new File(environmentsFile);
-		FileWriter writer = new FileWriter(file);
-		for (Environment enviro : tempList) {
-			if (enviro.getName() != environment) {
-				writer.write(enviro.getName());
-				writer.write(",");
-				writer.write(enviro.getCron());
-				writer.append("\n");
+	public List<Environment> getValidEnvironments() throws IOException {
+		// TODO Auto-generated method stub
+		List<Environment> enviroTemp = new ArrayList<Environment>();
+		for (Environment e : getEnvironments()) {
+			if (!e.getCron().equals("")) {
+				System.out.println("Cron value" + e.getCron());
+				enviroTemp.add(e);
 			}
 		}
-
-		writer.flush();
-		writer.close();
-
-		trigger.triggerCron();
+		return enviroTemp;
 	}
 
 }

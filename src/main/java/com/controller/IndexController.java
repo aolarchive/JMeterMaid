@@ -9,16 +9,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
 import com.web_application.AllEnvironmentsFromFile;
+import com.web_application.Environment;
 import com.web_application.GatherInfoForIndexTable;
 import com.web_application.RunDao;
 import com.web_application.RunEntity;
@@ -42,13 +46,19 @@ public class IndexController {
 	@Autowired
 	AllEnvironmentsFromFile environments;
 	
+	 @ResponseStatus(value=HttpStatus.NOT_FOUND, reason="ID is null")  // 404
+	  @ExceptionHandler(IDIsNullException.class)
+	  public void conflict() {
+	    // Nothing to do
+	  }
+	
 	@RequestMapping("/index")	
 	public View index(Model model) throws Exception {
 		//environments.addEnvironment("OBI02", "0 * * * * ?");
-		String[] environmentList = new String[environments.getEnvironments().size()];
-		for(int i = 0; i < environments.getEnvironments().size(); i++)
+		List<Environment> enviroList = environments.getEnvironments();
+		for(Environment env : enviroList)
 		{
-			environmentList[i] = environments.getEnvironments().get(i).getName();
+			env.setLastTestNum(rDao.findLatestTestNumber(env.getName(), "Scheduled"));
 		}
 		List<TestAndPath> info = gatherInfo.infoForTable();
 		TestAndPath[] information = new TestAndPath[info.size()];
@@ -56,12 +66,12 @@ public class IndexController {
 		{
 			//System.out.println("Test " + info.get(i).getName());
 			information[i] = info.get(i);
+
 		}
 		
-		
-		
         model.addAttribute("info", information);
-        model.addAttribute("environmentList", environmentList);
+        model.addAttribute("environmentList", enviroList);
+        model.addAttribute("manualTestNum", rDao.findLatestSourceTestNumber("manual"));
 
 		return resolver.resolveViewName("index", Locale.US);
 	}
@@ -76,8 +86,14 @@ public class IndexController {
 		RunEntity run = new RunEntity();
 		
 		run = rDao.findById(ID);
-		
-	    model.addAttribute("run", run);
+		if(run == null)
+		{
+			throw new IDIsNullException();
+		}
+		else
+		{
+			model.addAttribute("run", run);
+		}
 	}
 
 	return resolver.resolveViewName("results", Locale.US);

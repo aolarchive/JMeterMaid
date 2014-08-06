@@ -23,6 +23,10 @@ public interface RunRepository extends JpaRepository<RunEntity, Integer> {
 	@Query("SELECT r FROM RunEntity r WHERE r.source = :source")
 	public List<RunEntity> findBySource(
 			@Param("source") String source);
+	
+	@Query("SELECT r FROM RunEntity r WHERE r.testName = :testName ORDER BY r.date DESC")
+	public List<RunEntity> findByName(
+			@Param("testName") String name);
 
 	@Query("SELECT r FROM RunEntity r WHERE r.testName = :testname AND r.testNumber = :testnumber AND r.environment = :environment AND r.source = :source")
 	public List<RunEntity> findByNameNumberEnvironmentSource(
@@ -30,5 +34,5 @@ public interface RunRepository extends JpaRepository<RunEntity, Integer> {
 			@Param("testnumber") int testnumber,
 			@Param("environment") String environment,
 			@Param("source") String source);
-
+	
 }

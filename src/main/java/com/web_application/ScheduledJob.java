@@ -24,11 +24,10 @@ public class ScheduledJob extends QuartzJobBean {
 		System.out.println(threadPoolExecutor.getPoolSize());
 		JobKey key = context.getJobDetail().getKey();
 		String enviro = key.getGroup();
-		String source = key.getName();
 
 		RunGenerator run = null;
 		try {
-			run = new RunGenerator(enviro, source);
+			run = new RunGenerator(enviro, "Scheduled");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -6,6 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AllTestsAndPaths {
+	
+	public String[] getAllEnviros()
+	{
+		File file = null;
+		file = new File(ImportantInformation.getLocalPath() + "/Config");
+		return file.list();
+	}
 
 	public List<TestAndPath> testsAndPaths() throws IOException {
 		List<TestAndPath> testsAndPaths = new ArrayList<TestAndPath>();

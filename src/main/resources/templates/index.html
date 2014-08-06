@@ -2,29 +2,69 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Index</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Index</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
-<body>
-	<a href="/manualTest">Run specific tests right now</a>
-	<table border="1">
-	<tr>
-		<td>Test Name</td>
-		<td th:each="environment : ${environmentList}"
-		th:text="${environment}">Tests</td>
-	</tr>
-	<th:block th:each="info : ${info}">
-	<tr>
-       <td th:text="${info.name}">A Test'</td>
-       <th:block th:each="pf : ${info.passFailOrNA}">
-            <td>
-       			<a th:text="${pf.passFailOrNA}" th:href="@{/results(id=${pf.runID})}"></a>
-       		</td>
-       </th:block>
-    </tr>
-    </th:block>
-	
-	</table>
-	
+<body style="background-color: silver">
+	<div
+		style="height: 60px; background-color: red; margin-left: auto; margin-right: auto; width: 99%;">
+		<table border="1"
+			style="height: 58px; text-align: center; margin-left: auto; margin-right: auto; width: 100%;">
+			<tr>
+				<td style="width: 24%;"><a href="/index">JMeterMaid</a></td>
+				<td style="width: 24%;"><a href="/configure?error=false">Configure
+						Environments</a></td>
+				<td style="width: 24%;"><a href="/manualTest">Run Tests
+						Manually</a></td>
+				<td style="width: 24%;"><a
+					th:href="@{/manualResults(source=manual,testNum=${manualTestNum})}">View
+						Manual Run History</a></td>
+			</tr>
+		</table>
+	</div>
+	<div
+		style="background-color: white; margin-left: auto; margin-right: auto; width: 75%">
+		<h1 style="text-align: center; margin-left: auto; margin-right: auto;">Scheduled
+			Test Results</h1>
+		<table border="1"
+			style="text-align: center; margin-left: auto; margin-right: auto;width: 80%;">
+			<tr>
+				<td>Path</td>
+				<td>Test Name</td>
+				<td th:each="environment : ${environmentList}"><th:block
+						th:switch="${environment.lastTestNum}">
+						<p th:case="0" th:text="${environment.name}"></p>
+						<p th:case="*">
+							<a th:text="${environment.name}"
+								th:href="@{/environmentHistory(testNum=${environment.lastTestNum},environment=${environment.name})}"></a>
+						</p>
+					</th:block></td>
+			</tr>
+			<th:block th:each="info : ${info}">
+				<tr>
+					<td th:text="${info.path}"></td>
+					<td><a style="color: black;" th:href="@{/testHistory(test=${info.name})}"
+						th:text="${info.name}">A Test'</a></td>
+					<th:block th:each="pf : ${info.passFailOrNA}">
+						<th:block th:switch="${pf.passFailOrNA}">
+							<td th:case="'Failed'"><a style="color: red"
+								th:text="${pf.passFailOrNA}"
+								th:href="@{/results(id=${pf.runID})}"></a></td>
+							<td th:case="'Passed'"><a style="color: green"
+								th:text="${pf.passFailOrNA}"
+								th:href="@{/results(id=${pf.runID})}"></a></td>
+							<td th:case="'Pending'" th:text="${pf.passFailOrNA}"></td>
+							<td th:case="'In Progress'" style="color: blue"
+								th:text="${pf.passFailOrNA}"></td>
+							<td th:case="*" style="opacity: 0.5" th:text="${pf.passFailOrNA}"></td>
+
+						</th:block>
+
+					</th:block>
+				</tr>
+			</th:block>
+
+		</table>
+	</div>
 </body>
 </html>

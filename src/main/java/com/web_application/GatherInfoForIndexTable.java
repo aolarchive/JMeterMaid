@@ -33,6 +33,7 @@ public class GatherInfoForIndexTable {
 			tempTest.setPath(test.getPath());
 			IDAndPassOrFail[] passFailIDTemp = new IDAndPassOrFail[enviroList.size()];
 
+			
 			for(int i = 0; i < enviroList.size(); i++)
 			{
 				RunEntity runTemp = new RunEntity();

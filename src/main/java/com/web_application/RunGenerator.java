@@ -2,8 +2,12 @@ package com.web_application;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -11,23 +15,26 @@ import org.eclipse.jgit.api.errors.TransportException;
 
 public class RunGenerator implements Runnable {
 
-	static String environment;
+	String environment;
 	RunDao rDao = ApplicationContextHolder.getContext().getBean(RunDao.class);
 	int testNumber;
 	List<TestAndPath> testList;
 	GitManipulator git = new GitManipulator();
-	static String localPath = ImportantInformation.getLocalPath();
-	static String pathToODirectory;
+	final static String localPath = ImportantInformation.getLocalPath();
+	String pathToODirectory;
 	String source;
+	List<RunEntity> runList = new ArrayList<RunEntity>();
 
 	public RunGenerator(String enviro, String sources) throws IOException {
 		environment = enviro;
-		testNumber = getLatestTestNumber() + 1;
+		testNumber = getLatestTestNumber(enviro, sources) + 1;
 		
 		AllTestsAndPaths all = new AllTestsAndPaths();
 		testList = all.testsAndPaths();
 		pathToODirectory = "test-results";
 		source = sources;
+		
+		createRuns(enviro, testNumber, testList);
 
 	}
 	
@@ -38,7 +45,25 @@ public class RunGenerator implements Runnable {
 		testList = testLists;
 		pathToODirectory = "test-results";
 		source = sources;
-
+		createRuns(enviro, testNumber, testList);
+	}
+	
+	public void createRuns(String enviro, int testNum, List<TestAndPath> testLists)
+	{
+		for (TestAndPath test : testList) {
+			
+			RunEntity run = new RunEntity();
+			run.setTestName(test.getName());
+			run.setEnvironment(environment);
+			run.setTestPath(test.getPath());
+			run.setTestNumber(testNumber);
+			java.util.Date date = new java.util.Date();
+			run.setDate(new Timestamp(date.getTime()));
+			run.setSource(source);
+			run.setPassOrFail("Pending");
+			rDao.create(run);
+			runList.add(run);
+		}
 	}
 
 	@Override
@@ -56,24 +81,26 @@ public class RunGenerator implements Runnable {
 			e.printStackTrace();
 		}
 
-		for (TestAndPath test : testList) {
-			System.out.println("Running " + test.getName() + " in "
+		for (RunEntity run : runList) {
+			System.out.println("Running " + run.getTestName() + " in "
 					+ environment + " environment!");
-			RunEntity run = new RunEntity();
-			run.setTestName(test.getName());
-			run.setEnvironment(environment);
-			run.setTestNumber(testNumber);
-			java.util.Date date = new java.util.Date();
-			run.setDate(new Timestamp(date.getTime()));
-			run.setSource(source);
+			run.setPassOrFail("In Progress");
+			rDao.create(run);
 			try {
-				run.setPassOrFail(testPassed(test.getPath(), test.getName()));
+				run.setPassOrFail(testPassed(run.getTestPath(), run.getTestName()));
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				run.setPassOrFail("Failed");
 				break;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TimeoutException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			
 
 			try {
 				run.setResultFiles(ZipManipulator.compressZipFile(localPath
@@ -87,45 +114,51 @@ public class RunGenerator implements Runnable {
 		}
 	}
 
-	public int getLatestTestNumber() {
-		int testNum = rDao.findLatestTestNumber(environment, source);
+	public int getLatestTestNumber(String enviro, String sources) {
+		int testNum = rDao.findLatestTestNumber(enviro, sources);
+		System.out.println("Latest test number " + testNum);
+		System.out.println("Environment: " + enviro);
+		System.out.println("Source: " + sources);
 		return testNum;
 	}
 
-	public static String testPassed(String directory, String fileName)
-			throws InterruptedException {
+	private String testPassed(String directory, String fileName)
+			throws InterruptedException, IOException, TimeoutException {
+		String toReturn;
 		int passOrFail = 2;
 		File file = new File(localPath);
 
 		String returnSH = "./report.sh -e " + environment + " -t " + directory
 				+ "/" + fileName + " -o " + pathToODirectory;
 
-		try {
-			Process process = Runtime.getRuntime().exec(returnSH, null, file);
-			process.waitFor();
-			// System.out.println("Input Stream: " + process.getInputStream());
-			// System.out.println("Output Stream: " +
-			// process.getOutputStream());
-			// System.out.println("Errors: " + process.getErrorStream());
+		
+		Process process = Runtime.getRuntime().exec(returnSH, null, file);
+		
+		ThreadWorker worker = new ThreadWorker(process);
+		int exitCode = worker.waitForProcess(3600000);
 
-			passOrFail = process.exitValue();
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch bloc
-			e.printStackTrace();
+		if (exitCode == Integer.MIN_VALUE)
+		{
+		    // Timeout
+			toReturn = "Abort";
 		}
-
-		if (passOrFail == 0) {
-			return "Passed";
-		} else {
-			return "Failed";
+		else
+		{
+		    // No timeout !
+		      if (exitCode == 0) 
+		      {
+					toReturn = "Passed";
+				} else {
+					toReturn = "Failed";
+				}
 		}
+		
+	    return toReturn;
+
 	}
 
 	// ____________________________________________________________________________________________________________________________________
-	public RunGenerator() {
-
-	}
+	
 }
 
 // Generate all values for run and return run

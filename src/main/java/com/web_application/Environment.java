@@ -1,15 +1,16 @@
 package com.web_application;
 
 public class Environment {
-	String environmentName;
+	String name;
 	String environmentCronValue;
+	int lastTestNum;
 
 	public String getName() {
-		return environmentName;
+		return name;
 	}
 
 	public void setName(String name) {
-		environmentName = name;
+		this.name = name;
 	}
 
 	public String getCron() {
@@ -18,5 +19,13 @@ public class Environment {
 
 	public void setCron(String cron) {
 		environmentCronValue = cron;
+	}
+	
+	public int getLastTestNum() {
+		return lastTestNum;
+	}
+
+	public void setLastTestNum(int lastTestNumber) {
+		lastTestNum = lastTestNumber;
 	}
 }

@@ -3,7 +3,6 @@ package com.web_application;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +41,11 @@ public class RunDao {
 	public List<RunEntity> findByTestNumberAndSource(int testNum, String source) {
 		return runRepository.findByTestNumberAndSource(testNum, source);
 	}
+	
+	@Transactional
+	public List<RunEntity> findByName(String name) {
+		return runRepository.findByName(name);
+	}
 
 	public List<RunEntity> findByNameNumberEnviroSource(String testName,
 			int testNum, String enviro, String source) {
@@ -76,5 +80,6 @@ public class RunDao {
 
 		return testNum;
 	}
+	
 
 }

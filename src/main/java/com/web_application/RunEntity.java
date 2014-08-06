@@ -15,6 +15,7 @@ public class RunEntity {
 	private int ID;
 	private int testNumber;
 	private String testName;
+	private String testPath;
 	private String environment;
 	private String source;
 	private String passOrFail;
@@ -48,6 +49,15 @@ public class RunEntity {
 
 	public void setTestName(String testName) {
 		this.testName = testName;
+	}
+	
+	@Column(name = "TestPath")
+	public String getTestPath() {
+		return this.testPath;
+	}
+
+	public void setTestPath(String testPath) {
+		this.testPath = testPath;
 	}
 
 	@Column(name = "Environment")

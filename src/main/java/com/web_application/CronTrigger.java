@@ -12,13 +12,16 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ThreadPoolExec;
 
 @Component
 public class CronTrigger {
-	
+
+	@Autowired
+	AllEnvironmentsFromFile enviros;
 
 	List<Environment> environments = new ArrayList<Environment>();
 	Scheduler scheduler;
@@ -31,16 +34,15 @@ public class CronTrigger {
 	public void triggerCron() throws SchedulerException, IOException {
 
 		scheduler.clear();
-		AllEnvironmentsFromFile enviros = new AllEnvironmentsFromFile();
-		environments = enviros.getEnvironments();
+		environments = enviros.getValidEnvironments();
+		
 		for (Environment enviro : environments) {
+			try{
 			JobKey jobKey = new JobKey("Scheduled", enviro.getName());
-			
+
 			JobDetail runTestJob = JobBuilder.newJob(ScheduledJob.class)
-					.withIdentity(jobKey)
-					.build();
-			
-			
+					.withIdentity(jobKey).build();
+
 			Trigger runTrigger = TriggerBuilder
 					.newTrigger()
 					.withIdentity("cronTrigger", enviro.getName())
@@ -48,9 +50,15 @@ public class CronTrigger {
 							CronScheduleBuilder.cronSchedule(enviro.getCron()))
 					.build();
 
-
 			scheduler.scheduleJob(runTestJob, runTrigger);
+
 		}
+			catch (org.quartz.SchedulerException e)
+			{
+				System.out.println("Cron is invalid");
+			}
+		}
+		
 
 	}
 }
