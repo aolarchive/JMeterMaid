@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<h1 th:text="|${enviro} tests on ${date}|"></h1>
+
+	<table border="1">
+		<tr>
+			<td>Test Name</td>
+			<td>Status</td>
+		</tr>
+		<th:block th:each="run : ${runs}">
+			<tr>
+				<td th:text="${run.testName}">A Test'</td>
+				<th:block th:switch="${run.passOrFail}">
+					<td th:case="'Failed'"><a style="color: red"
+						th:text="${run.passOrFail}" th:href="@{/results(id=${run.ID})}"></a></td>
+					<td th:case="'Passed'"><a style="color: green"
+						th:text="${run.passOrFail}" th:href="@{/results(id=${run.ID})}"></a></td>
+					<td th:case="'Pending'" style="color: black"
+						th:text="${run.passOrFail}"></td>
+				</th:block>
+			</tr>
+		</th:block>
+
+	</table>
+	<div>
+		<p>
+			<a th:if="${left} &lt; ${max}"
+				th:href="@{/environmentHistory(testNum=${left},environment=${enviro})}">&#9664;</a><a
+				th:if="${right} &gt; 0"
+				th:href="@{/environmentHistory(testNum=${right},environment=${enviro})}">&#9654;</a>
+		</p>
+	</div>
+
+</body>
+</html>

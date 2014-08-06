@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+
+	<h1 th:text="|${testName} Full History|"></h1>
+
+	<table border="1" style="width:500px">
+		<tr>
+			<td>Date</td>
+			<td>Status</td>
+			<td>Environment</td>
+			<td>Source</td>
+		</tr>
+		<th:block th:each="run : ${runHistory}">
+			<tr>
+				<td th:text="${run.date}"></td>
+				<th:block th:switch="${run.passOrFail}">
+						<td th:case="'Failed'"><a style="color:red" th:text="${run.passOrFail}"
+							th:href="@{/results(id=${run.ID})}"></a></td>
+						<td th:case="'Passed'"><a style="color:green" th:text="${run.passOrFail}"
+							th:href="@{/results(id=${run.ID})}"></a></td>
+						<td th:case="*" th:text="${run.passOrFail}"></td>
+						<td th:case="'In Progress'" style="color:blue" th:text="${run.passOrFail}"></td>
+					</th:block>
+				<td th:text="${run.environment}"></td>
+				<td th:text="${run.source}"></td>
+				
+			</tr>
+		</th:block>
+
+	</table>
+</body>
+</html>

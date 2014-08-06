@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Insert title here</title>
+</head>
+<body>
+	<h1 th:if="${ID} == 0">This test has not yet run. Check back soon!</h1>
+	<div th:if="${ID} != 0">
+		<iframe th:src="@{/resultDisplay(id=${ID})}" width="1150" height="900"></iframe>
+	</div>
+</body>
+</html>

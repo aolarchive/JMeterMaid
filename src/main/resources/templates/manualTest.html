@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Insert title here</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	 <form action="#" th:action="@{/manualTest}" th:object="${source}" method="post">
+        
+	<table border="1">
+	<tr>
+		<td>Test Name</td>
+		<td th:each="environment : ${environmentList}"
+		th:text="${environment}">Tests</td>
+	</tr>
+	<th:block th:each="test : ${testList}">
+	<tr>
+        <td th:text="${test.name}">A Test'</td>
+        <th:block th:each="enviro : ${environmentList}">
+       		<td><input type="checkbox" th:field="*{testList}" th:value="|${test.name}-${enviro}|" /></td>
+       	</th:block>
+  
+    </tr>
+    </th:block>
+	
+	</table>
+	<p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+    </form>
+</body>
+</html>

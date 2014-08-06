@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>Configure Scheduled Tests</h1>
+	<form action="#" th:action="@{/configure}" th:object="${source}"
+		method="post">
+		<div id="div1">
+			<th:block th:each="env,envStat : *{enviro}">
+				<th:block th:switch="${envStat.index}">
+					<p th:case="${errorNum}">
+						Environment Name: <input type="text"
+							th:field="*{enviro[__${envStat.index}__].name}" /> Cron Value: <input
+							type="text" th:field="*{enviro[__${envStat.index}__].cron}" />
+						<th:block th:switch="${errorType}">
+							<span th:case="'environment'" style="color: red">The
+								environment name that you entered is invalid</span>
+							<span th:case="'cron'" style="color: red">The
+								cron that you entered is invalid</span>
+						</th:block>
+					</p>
+					<p th:case="*">
+						Environment Name: <input type="text"
+							th:field="*{enviro[__${envStat.index}__].name}" /> Cron Value: <input
+							type="text" th:field="*{enviro[__${envStat.index}__].cron}" /> 
+							Remove: <input type="checkbox" th:field="*{envirosToRemove}" th:value="${envStat.index}" /> 
+					</p>
+				</th:block>
+			</th:block>
+		</div>
+
+		<p>
+			<input type="submit" value="Submit" />
+		</p>
+	</form>
+
+	<button action="" onclick="addInput()">Add new environment.</button>
+	<script>
+		function addInput() {
+			var p = document.createElement("p");
+			var nameText = document.createTextNode("Environment Name: ");
+			var cronText = document.createTextNode("Cron Value: ");
+			var count = document.getElementById("div1").getElementsByTagName(
+					"p").length
+
+			var nameField = document.createElement("input");
+			nameField.setAttribute("type", "text")
+			nameField.setAttribute("name", "enviro[" + count + "].name")
+
+			var cronField = document.createElement("input");
+			cronField.setAttribute("type", "text")
+			cronField.setAttribute("name", "enviro[" + count + "].cron")
+
+			p.appendChild(nameText);
+			p.appendChild(nameField);
+			p.appendChild(cronText);
+			p.appendChild(cronField);
+
+			document.getElementById("div1").appendChild(p);
+
+		}
+	</script>
+</body>
+</html>

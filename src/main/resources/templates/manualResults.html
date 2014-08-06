@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Insert title here</title>
+</head>
+<body>
+	<h1 th:text="|Manual test run on ${date}|"></h1>
+	<p th:if="${testNum} == ${newest}" style="color: red">If some of
+		your tests are not showing up that means that they are still running.</p>
+	<table border="1">
+		<tr>
+			<td>Test Name</td>
+			<td>Environment</td>
+			<td>Pass or Fail Status</td>
+		</tr>
+		<th:block th:each="run : ${runs}" th:if="${testNumber} != 0">
+			<tr>
+				<td th:text="${run.testName}"></td>
+				<td th:text="${run.environment}"></td>
+				<td><a th:text="${run.passOrFail}"
+					th:href="@{/results(id=${run.ID})}"></a></td>
+			</tr>
+		</th:block>
+	</table>
+	<div>
+		<p>
+			<a th:if="${left} &lt; ${max}"
+				th:href="@{/manualResults(source=manual,testNum=${left})}">&#9664;</a><a
+				th:if="${right} &gt; 0"
+				th:href="@{/manualResults(source=manual,testNum=${right})}">&#9654;</a>
+		</p>
+	</div>
+</body>
+</html>
