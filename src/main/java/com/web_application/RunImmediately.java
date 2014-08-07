@@ -10,6 +10,7 @@ import javax.annotation.PreDestroy;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
+import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -32,6 +33,8 @@ public class RunImmediately {
 	GitManipulator git = new GitManipulator();
 	
 	ThreadPoolExecutor tpe = ThreadPoolExec.getThreadPoolExec().getExecutor();
+	
+	
 
 	@PostConstruct
 	public void go() throws IOException, SchedulerException,
@@ -60,8 +63,22 @@ public class RunImmediately {
 	}
 	
 	@PreDestroy
-	public void kill() throws InterruptedException
+	public void kill() throws InterruptedException, SchedulerException
 	{
+		Scheduler scheduler = ThreadPoolExec.getScheduler();
+		System.out.println("Startin Shutdown");
+		try {
+			if(scheduler.isStarted())
+			{
+				scheduler.shutdown();
+			}
+		} catch (SchedulerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NullPointerException e)
+		{
+			
+		}
 		while(tpe.getActiveCount() > 0)
 		{
 			Thread.sleep(5000);
