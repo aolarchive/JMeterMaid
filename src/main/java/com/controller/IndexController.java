@@ -95,7 +95,8 @@ public class IndexController {
 			model.addAttribute("run", run);
 		}
 	}
-
+	int x = rDao.findLatestSourceTestNumber("manual");
+	model.addAttribute("manualTestNum", x);
 	return resolver.resolveViewName("results", Locale.US);
 	}
 	
