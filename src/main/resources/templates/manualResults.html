@@ -3,32 +3,66 @@
 <head>
 <title>Insert title here</title>
 </head>
-<body>
-	<h1 th:text="|Manual test run on ${date}|"></h1>
-	<p th:if="${testNum} == ${newest}" style="color: red">If some of
-		your tests are not showing up that means that they are still running.</p>
-	<table border="1">
-		<tr>
-			<td>Test Name</td>
-			<td>Environment</td>
-			<td>Pass or Fail Status</td>
-		</tr>
-		<th:block th:each="run : ${runs}" th:if="${testNumber} != 0">
+<body style="background-color: silver">
+	<div
+		style="height: 60px; background-color: rgba(216, 179, 81, 0.9); margin-left: auto; margin-right: auto; width: 99%;">
+		<table border="1"
+			style="height: 58px; text-align: center; margin-left: auto; margin-right: auto; width: 100%;">
 			<tr>
-				<td th:text="${run.testName}"></td>
-				<td th:text="${run.environment}"></td>
-				<td><a th:text="${run.passOrFail}"
-					th:href="@{/results(id=${run.ID})}"></a></td>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%" href="/index">JMeterMaid</a></td>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%"
+					href="/configure?error=false">Configure Environments</a></td>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%"
+					href="/manualTest">Run Tests Manually</a></td>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%"
+					th:href="@{/manualResults(source=manual,testNum=${testNumber})}">View
+						Manual Run History</a></td>
 			</tr>
-		</th:block>
-	</table>
-	<div>
-		<p>
-			<a th:if="${left} &lt; ${max}"
-				th:href="@{/manualResults(source=manual,testNum=${left})}">&#9664;</a><a
-				th:if="${right} &gt; 0"
-				th:href="@{/manualResults(source=manual,testNum=${right})}">&#9654;</a>
-		</p>
+		</table>
+	</div>
+
+	<div
+		style="background-color: white; margin-left: auto; margin-right: auto; width: 75%">
+		<h1 th:text="|Manual test run on ${date}|"
+			style="text-align: center; margin-left: auto; margin-right: auto;"></h1>
+		<p th:if="${testNum} == ${newest}" style="color: red">If some of
+			your tests are not showing up that means that they are still running.</p>
+		<table border="1"
+			style="text-align: center; margin-left: auto; margin-right: auto; width: 80%;">
+			<tr>
+				<td>Test Name</td>
+				<td>Environment</td>
+				<td>Pass or Fail Status</td>
+			</tr>
+			<th:block th:each="run : ${runs}" th:if="${testNumber} != 0">
+				<tr>
+					<td th:text="${run.testName}"></td>
+					<td th:text="${run.environment}"></td>
+					<th:block th:switch="${run.passOrFail}">
+						<td th:case="'Failed'"><a style="color: red"
+							th:text="${run.passOrFail}" th:href="@{/results(id=${run.ID})}"></a></td>
+						<td th:case="'Passed'"><a style="color: green"
+							th:text="${run.passOrFail}" th:href="@{/results(id=${run.ID})}"></a></td>
+						<td th:case="*" th:text="${run.passOrFail}"></td>
+						<td th:case="'In Progress'" style="color: blue"
+							th:text="${run.passOrFail}"></td>
+					</th:block>
+				</tr>
+			</th:block>
+		</table>
+		<div>
+			<p>
+				<a th:if="${left} &lt; ${max}"
+					style="position: relative; left: 43%;"
+					th:href="@{/manualResults(source=manual,testNum=${left})}">&#9664;</a>
+				<a th:if="${right} &gt; 0" style="position: relative; left: 55%;"
+					th:href="@{/manualResults(source=manual,testNum=${right})}">&#9654;</a>
+			</p>
+		</div>
 	</div>
 </body>
 </html>

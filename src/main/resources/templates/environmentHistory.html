@@ -4,37 +4,60 @@
 <meta charset="UTF-8" />
 <title>Insert title here</title>
 </head>
-<body>
-	<h1 th:text="|${enviro} tests on ${date}|"></h1>
-
-	<table border="1">
-		<tr>
-			<td>Test Name</td>
-			<td>Status</td>
-		</tr>
-		<th:block th:each="run : ${runs}">
+<body style="background-color: silver">
+	<div
+		style="height: 60px; background-color: rgba(216, 179, 81, 0.9); margin-left: auto; margin-right: auto; width: 99%;">
+		<table border="1"
+			style="height: 58px; text-align: center; margin-left: auto; margin-right: auto; width: 100%;">
 			<tr>
-				<td th:text="${run.testName}">A Test'</td>
-				<th:block th:switch="${run.passOrFail}">
-					<td th:case="'Failed'"><a style="color: red"
-						th:text="${run.passOrFail}" th:href="@{/results(id=${run.ID})}"></a></td>
-					<td th:case="'Passed'"><a style="color: green"
-						th:text="${run.passOrFail}" th:href="@{/results(id=${run.ID})}"></a></td>
-					<td th:case="'Pending'" style="color: black"
-						th:text="${run.passOrFail}"></td>
-				</th:block>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%" href="/index">JMeterMaid</a></td>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%"
+					href="/configure?error=false">Configure Environments</a></td>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%"
+					href="/manualTest">Run Tests Manually</a></td>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%"
+					th:href="@{/manualResults(source=manual,testNum=${manualTestNum})}">View
+						Manual Run History</a></td>
 			</tr>
-		</th:block>
-
-	</table>
-	<div>
-		<p>
-			<a th:if="${left} &lt; ${max}"
-				th:href="@{/environmentHistory(testNum=${left},environment=${enviro})}">&#9664;</a><a
-				th:if="${right} &gt; 0"
-				th:href="@{/environmentHistory(testNum=${right},environment=${enviro})}">&#9654;</a>
-		</p>
+		</table>
 	</div>
+	
+	<div
+		style="background-color: white; margin-left: auto; margin-right: auto; width: 75%">
+		<h1 th:text="|${enviro} tests on ${date}|" style="text-align: center; margin-left: auto; margin-right: auto;"></h1>
+		<table border="1"
+			style="text-align: center; margin-left: auto; margin-right: auto; width: 80%;">
+			<tr>
+				<td>Test Name</td>
+				<td>Status</td>
+			</tr>
+			<th:block th:each="run : ${runs}">
+				<tr>
+					<td th:text="${run.testName}">A Test'</td>
+					<th:block th:switch="${run.passOrFail}">
+						<td th:case="'Failed'"><a style="color: red"
+							th:text="${run.passOrFail}" th:href="@{/results(id=${run.ID})}"></a></td>
+						<td th:case="'Passed'"><a style="color: green"
+							th:text="${run.passOrFail}" th:href="@{/results(id=${run.ID})}"></a></td>
+						<td th:case="'Pending'" style="color: black"
+							th:text="${run.passOrFail}"></td>
+					</th:block>
+				</tr>
+			</th:block>
 
+		</table>
+		<div>
+			<p>
+				<a th:if="${left} &lt; ${max}" style="position: relative; left: 43%;"
+					th:href="@{/environmentHistory(testNum=${left},environment=${enviro})}">&#9664;</a><a
+					th:if="${right} &gt; 0" style="position: relative; left: 55%;"
+					th:href="@{/environmentHistory(testNum=${right},environment=${enviro})}">&#9654;</a>
+			</p>
+		</div>
+	</div>
 </body>
 </html>

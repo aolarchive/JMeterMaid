@@ -39,7 +39,8 @@ public class TestHistoryController {
 	public View manualResults(@RequestParam("test") String testName, Model model) throws Exception {
 		
 		List<RunEntity> runs = rDao.findByName(testName);
-		
+		int x = rDao.findLatestSourceTestNumber("manual");
+		model.addAttribute("manualTestNum", x);
 		model.addAttribute("testName", testName);
 		model.addAttribute("runHistory", runs);
 		return resolver.resolveViewName("testHistory", Locale.US);

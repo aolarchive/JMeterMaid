@@ -50,6 +50,8 @@ public class ManualTestController {
 					.getName();
 		}
 
+		int x = rDao.findLatestSourceTestNumber("manual");
+		model.addAttribute("manualTestNum", x);
 		model.addAttribute("testList", testList);
 		model.addAttribute("source", new Source());
 		model.addAttribute("environmentList", environmentList);

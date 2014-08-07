@@ -4,27 +4,57 @@
 <title>Insert title here</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
-<body>
-	 <form action="#" th:action="@{/manualTest}" th:object="${source}" method="post">
-        
-	<table border="1">
-	<tr>
-		<td>Test Name</td>
-		<td th:each="environment : ${environmentList}"
-		th:text="${environment}">Tests</td>
-	</tr>
-	<th:block th:each="test : ${testList}">
-	<tr>
-        <td th:text="${test.name}">A Test'</td>
-        <th:block th:each="enviro : ${environmentList}">
-       		<td><input type="checkbox" th:field="*{testList}" th:value="|${test.name}-${enviro}|" /></td>
-       	</th:block>
-  
-    </tr>
-    </th:block>
-	
-	</table>
-	<p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
-    </form>
+<body style="background-color: silver">
+	<div
+		style="height: 60px; background-color: rgba(216, 179, 81, 0.9); margin-left: auto; margin-right: auto; width: 99%;">
+		<table border="1"
+			style="height: 58px; text-align: center; margin-left: auto; margin-right: auto; width: 100%;">
+			<tr>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%" href="/index">JMeterMaid</a></td>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%"
+					href="/configure?error=false">Configure Environments</a></td>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%"
+					href="/manualTest">Run Tests Manually</a></td>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%"
+					th:href="@{/manualResults(source=manual,testNum=${manualTestNum})}">View
+						Manual Run History</a></td>
+			</tr>
+		</table>
+	</div>
+	<form action="#" th:action="@{/manualTest}" th:object="${source}"
+		method="post">
+		<div
+			style="background-color: white; margin-left: auto; margin-right: auto; width: 75%">
+			<h1
+				style="text-align: center; margin-left: auto; margin-right: auto;">Manually Run Tests</h1>
+			<table border="1"
+				style="text-align: center; margin-left: auto; margin-right: auto; width: 80%;">
+				<tr>
+					<td>Test Name</td>
+					<td th:each="environment : ${environmentList}"
+						th:text="${environment}">Tests</td>
+				</tr>
+				<th:block th:each="test : ${testList}">
+					<tr>
+						<td th:text="${test.name}">A Test'</td>
+						<th:block th:each="enviro : ${environmentList}">
+							<td><input type="checkbox" th:field="*{testList}"
+								th:value="|${test.name}-${enviro}|" /></td>
+						</th:block>
+
+					</tr>
+				</th:block>
+
+			</table>
+			<p>
+				<input type="submit" value="Submit" /> <input type="reset"
+					value="Reset" />
+			</p>
+		</div>
+	</form>
 </body>
 </html>

@@ -4,34 +4,58 @@
 <meta charset="UTF-8" />
 <title>Insert title here</title>
 </head>
-<body>
-
-	<h1 th:text="|${testName} Full History|"></h1>
-
-	<table border="1" style="width:500px">
-		<tr>
-			<td>Date</td>
-			<td>Status</td>
-			<td>Environment</td>
-			<td>Source</td>
-		</tr>
-		<th:block th:each="run : ${runHistory}">
+<body style="background-color: silver">
+	<div
+		style="height: 60px; background-color: rgba(216, 179, 81, 0.9); margin-left: auto; margin-right: auto; width: 99%;">
+		<table border="1"
+			style="height: 58px; text-align: center; margin-left: auto; margin-right: auto; width: 100%;">
 			<tr>
-				<td th:text="${run.date}"></td>
-				<th:block th:switch="${run.passOrFail}">
-						<td th:case="'Failed'"><a style="color:red" th:text="${run.passOrFail}"
-							th:href="@{/results(id=${run.ID})}"></a></td>
-						<td th:case="'Passed'"><a style="color:green" th:text="${run.passOrFail}"
-							th:href="@{/results(id=${run.ID})}"></a></td>
-						<td th:case="*" th:text="${run.passOrFail}"></td>
-						<td th:case="'In Progress'" style="color:blue" th:text="${run.passOrFail}"></td>
-					</th:block>
-				<td th:text="${run.environment}"></td>
-				<td th:text="${run.source}"></td>
-				
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%" href="/index">JMeterMaid</a></td>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%"
+					href="/configure?error=false">Configure Environments</a></td>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%"
+					href="/manualTest">Run Tests Manually</a></td>
+				<td style="width: 24%;"><a
+					style="color: rgb(49, 22, 7, 0.9); font-size: 150%"
+					th:href="@{/manualResults(source=manual,testNum=${manualTestNum})}">View
+						Manual Run History</a></td>
 			</tr>
-		</th:block>
+		</table>
+	</div>
 
-	</table>
+	<div
+		style="background-color: white; margin-left: auto; margin-right: auto; width: 75%">
+		<h1 th:text="|${testName} Full History|" style="text-align: center; margin-left: auto; margin-right: auto;"></h1>
+		<table border="1"
+			style="text-align: center; margin-left: auto; margin-right: auto; width: 80%;">
+			<tr>
+				<td>Date</td>
+				<td>Status</td>
+				<td>Environment</td>
+				<td>Source</td>
+			</tr>
+			<th:block th:each="run : ${runHistory}">
+				<tr>
+					<td th:text="${run.date}"></td>
+					<th:block th:switch="${run.passOrFail}">
+						<td th:case="'Failed'"><a style="color: red"
+							th:text="${run.passOrFail}" th:href="@{/results(id=${run.ID})}"></a></td>
+						<td th:case="'Passed'"><a style="color: green"
+							th:text="${run.passOrFail}" th:href="@{/results(id=${run.ID})}"></a></td>
+						<td th:case="*" th:text="${run.passOrFail}"></td>
+						<td th:case="'In Progress'" style="color: blue"
+							th:text="${run.passOrFail}"></td>
+					</th:block>
+					<td th:text="${run.environment}"></td>
+					<td th:text="${run.source}"></td>
+
+				</tr>
+			</th:block>
+
+		</table>
+	</div>
 </body>
 </html>

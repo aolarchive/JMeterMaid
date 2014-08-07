@@ -52,7 +52,8 @@ public class EnvironmentHistoryController {
 			}
 		}
 		String date = new SimpleDateFormat("MM/dd/yyyy").format(runs.get(0).getDate());
-				
+		int x = rDao.findLatestSourceTestNumber("manual");
+		model.addAttribute("manualTestNum", x);
 		model.addAttribute("date", date);
 		model.addAttribute("runs", runsTwo);
 		model.addAttribute("max", max);

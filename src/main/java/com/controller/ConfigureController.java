@@ -63,9 +63,10 @@ public class ConfigureController {
 		} else {
 			enviros = environments.getAllEntities();
 		}
-
+		int x = rDao.findLatestSourceTestNumber("manual");
 		Source source = new Source();
 		source.setEnviro(enviros);
+		model.addAttribute("manualTestNum", x);
 		model.addAttribute("errorNum", errorNum);
 		model.addAttribute("errorType", errorType);
 		model.addAttribute("environments", enviros);
@@ -83,7 +84,7 @@ public class ConfigureController {
 		boolean errorBool = false;
 		String errorType = null;
 		Integer errorNum = env.size() + 5;
-		
+
 		AllTestsAndPaths aTP = new AllTestsAndPaths();
 		String[] enviroOptions = aTP.getAllEnviros();
 		for (int i = 0; i < env.size(); i++) {
@@ -101,17 +102,14 @@ public class ConfigureController {
 			if (notAnOption) {
 				errorBool = true;
 				errorType = "environment";
-			}
-			else
-			{
-				if(errorBool && env.get(i).getCron().equals(""))
-				{
-					//Setting cron value that will never run
+			} else {
+				if (errorBool && env.get(i).getCron().equals("")) {
+					// Setting cron value that will never run
 					errorBool = false;
 				}
 			}
-			if(env.get(i).getName().equals("") && env.get(i).getCron().equals(""))
-			{
+			if (env.get(i).getName().equals("")
+					&& env.get(i).getCron().equals("")) {
 				errorBool = false;
 			}
 
@@ -132,35 +130,26 @@ public class ConfigureController {
 		} else {
 			List<Integer> intList = source.getEnvirosToRemove();
 			List<EnvironmentEntity> envTwo = new ArrayList<EnvironmentEntity>();
-			if(!(intList == null))
-			{
-				for(int i = 0; i < env.size(); i++)
-				{
+			if (!(intList == null)) {
+				for (int i = 0; i < env.size(); i++) {
 					boolean add = true;
-					for(Integer j : intList)
-					{
-						if(j == i)
-						{
+					for (Integer j : intList) {
+						if (j == i) {
 							add = false;
 						}
 					}
-					if(env.get(i).getName().equals("") && env.get(i).getCron().equals(""))
-					{
+					if (env.get(i).getName().equals("")
+							&& env.get(i).getCron().equals("")) {
 						add = false;
 					}
-					if(add)
-					{
+					if (add) {
 						envTwo.add(env.get(i));
 					}
 				}
-	
-			}
-			else
-			{
-				for(EnvironmentEntity e : env)
-				{
-					if(!(e.getName().equals("") && e.getCron().equals("")))
-					{
+
+			} else {
+				for (EnvironmentEntity e : env) {
+					if (!(e.getName().equals("") && e.getCron().equals(""))) {
 						envTwo.add(e);
 					}
 				}
