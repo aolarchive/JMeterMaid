@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Insert title here</title>
+<title>Test Results</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 </head>
-<body
+<body onload='alertSize()'
 	style="background-color: silver; margin: 0; padding: 0; height: 100%;">
 	<div
 		style="height: 60px; background-color: rgba(216, 179, 81, 0.9); margin-left: auto; margin-right: auto; width: 99%;">
@@ -26,10 +27,8 @@
 		</table>
 	</div>
 	<h1 th:if="${ID} == 0">This test has not yet run. Check back soon!</h1>
-	<div style="height: 100%" th:if="${ID} != 0">
-		<p></p>
-		<iframe th:src="@{/resultDisplay(id=${ID})}" width="100%"
-			height="100%; width: 60%;"></iframe>
+	<div id="theDiv" style="width: 100%;" th:if="${ID} != 0">
+		<iframe id="theFrame" style="width:100%; height:800px" th:src="@{/resultDisplay(id=${ID})}"></iframe>
 	</div>
 	<div
 		style="background-color: white; margin-left: auto; margin-right: auto; width: 75%">
@@ -37,5 +36,6 @@
 			Output</h1>
 		<pre style="position: relative; left: 60px; width:80%; max-width:80%; word-wrap:break-word;" th:text="${console}"></pre>
 	</div>
+	
 </body>
 </html>
