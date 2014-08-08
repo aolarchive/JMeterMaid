@@ -21,6 +21,8 @@ import com.web_application.RunImmediately;
 @EnableAutoConfiguration
 public class Application {
 	
+	
+	
 	public static void main(String[] args) throws Exception {
 		
 		Object[] sources = { Application.class, RunImmediately.class };

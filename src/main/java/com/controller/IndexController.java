@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.springframework.web.util.HtmlUtils;
 
 import com.web_application.AllEnvironmentsFromFile;
 import com.web_application.Environment;
@@ -92,6 +93,9 @@ public class IndexController {
 		}
 		else
 		{
+			byte[] console = run.getConsoleOutput();
+			String consoleString = new String(console);
+			model.addAttribute("console", consoleString);
 			model.addAttribute("run", run);
 		}
 	}

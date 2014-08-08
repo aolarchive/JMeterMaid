@@ -1,14 +1,18 @@
 package com.web_application;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -87,7 +91,7 @@ public class RunGenerator implements Runnable {
 			run.setPassOrFail("In Progress");
 			rDao.create(run);
 			try {
-				run.setPassOrFail(testPassed(run.getTestPath(), run.getTestName()));
+				run.setPassOrFail(testPassed(run.getTestPath(), run.getTestName(), run));
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -122,17 +126,49 @@ public class RunGenerator implements Runnable {
 		return testNum;
 	}
 
-	private String testPassed(String directory, String fileName)
+	private String testPassed(String directory, String fileName, RunEntity run)
 			throws InterruptedException, IOException, TimeoutException {
 		String toReturn;
-		int passOrFail = 2;
 		File file = new File(localPath);
 
 		String returnSH = "./report.sh -e " + environment + " -t " + directory
 				+ "/" + fileName + " -o " + pathToODirectory;
 
 		
-		Process process = Runtime.getRuntime().exec(returnSH, null, file);
+		final Process process = Runtime.getRuntime().exec(returnSH, null, file);
+		
+		BufferedReader error = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		Thread t1 = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					IOUtils.copy(process.getInputStream(), baos);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		t1.start();
+		Thread t2 = new Thread(new Runnable()
+		{
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				try {
+					IOUtils.copy(process.getErrorStream(), baos);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		});
+		t2.start();
+		
 		
 		ThreadWorker worker = new ThreadWorker(process);
 		int exitCode = worker.waitForProcess(3600000);
@@ -152,6 +188,12 @@ public class RunGenerator implements Runnable {
 					toReturn = "Failed";
 				}
 		}
+		t1.join();
+		t2.join();
+		
+		byte[] bytes = baos.toByteArray();
+		
+		run.setConsoleOutput(bytes);
 		
 	    return toReturn;
 

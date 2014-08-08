@@ -21,6 +21,8 @@ public class RunEntity {
 	private String passOrFail;
 	private Timestamp date;
 	private byte[] resultFiles;
+	private byte[] consoleOutput;
+
 
 	@Id
 	@Column(name = "ID")
@@ -104,6 +106,16 @@ public class RunEntity {
 
 	public void setResultFiles(byte[] file) {
 		this.resultFiles = file;
+	}
+	
+	@Lob
+	@Column(name = "ConsoleOutput")
+	public byte[] getConsoleOutput() {
+		return this.consoleOutput;
+	}
+
+	public void setConsoleOutput(byte[] file) {
+		this.consoleOutput = file;
 	}
 
 }
