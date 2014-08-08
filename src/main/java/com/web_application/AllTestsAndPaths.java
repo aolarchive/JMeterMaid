@@ -10,7 +10,11 @@ public class AllTestsAndPaths {
 	public String[] getAllEnviros()
 	{
 		File file = null;
-		file = new File(ImportantInformation.getLocalPath() + "/Config");
+		file = new File(ImportantInformation.getLocalPath() + "/CONFIG");
+		if(file.list() == null)
+		{
+			throw new RuntimeException("CONFIG file.list is returning null from " + file);
+		}
 		return file.list();
 	}
 

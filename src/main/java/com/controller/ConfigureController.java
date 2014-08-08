@@ -63,9 +63,10 @@ public class ConfigureController {
 		} else {
 			enviros = environments.getAllEntities();
 		}
-		int x = rDao.findLatestSourceTestNumber("manual");
+		
 		Source source = new Source();
 		source.setEnviro(enviros);
+		int x = rDao.findLatestSourceTestNumber("manual");
 		model.addAttribute("manualTestNum", x);
 		model.addAttribute("errorNum", errorNum);
 		model.addAttribute("errorType", errorType);
